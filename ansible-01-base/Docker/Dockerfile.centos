@@ -1,0 +1,21 @@
+FROM centos:7
+
+# Установка SSH сервера
+RUN yum install -y openssh-server && \
+    mkdir /var/run/sshd
+
+RUN ssh-keygen -A
+
+# Установка пароля для пользователя admin (замените 'password' на свой пароль)
+RUN useradd -m -s /bin/bash admin && \
+    echo 'admin:admin' | chpasswd
+
+# Добавление публичного ключа в authorized_keys
+RUN mkdir -p /home/admin/.ssh && \
+    echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMYulHpjNJyIEzez+QwKQ4UYC0o/4XN55gDYahrFpEnj' > /home/admin/.ssh/authorized_keys && \
+    chown -R admin:admin /home/admin/.ssh
+
+# Открываем порт 22 для SSH
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
