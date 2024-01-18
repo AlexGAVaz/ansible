@@ -1,0 +1,67 @@
+- name: Install Clickhouse
+  hosts: clickhouse
+  tags: clickhouse
+  tasks:
+    - name: Get clickhouse distrib
+      block:
+        - ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib (rescue)
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+    - name: Install clickhouse packages
+      become: true
+      ansible.builtin.yum:
+        name:
+          - "clickhouse-common-static-{{ clickhouse_version }}.rpm"
+          - "clickhouse-client-{{ clickhouse_version }}.rpm"
+          - "clickhouse-server-{{ clickhouse_version }}.rpm"
+      notify: Start clickhouse service
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Create database
+      block:
+        - ansible.builtin.meta: flush_handlers
+        - ansible.builtin.command: "clickhouse-client -q 'create database logs;'"
+          register: create_db
+          failed_when: create_db.rc != 0 and create_db.rc != 82
+          changed_when: create_db.rc == 0
+        - ansible.builtin.meta: flush_handlers
+      notify: Start clickhouse service
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+        enabled: true
+
+- name: Install, configure, and start Vector
+  hosts: vector
+  tags: vector
+  tasks:
+    - name: Add Vector repository
+      become: true
+      ansible.builtin.shell:
+        cmd: "bash -c \"$(curl -L https://setup.vector.dev)\""
+    - name: Install Vector
+      become: true
+      ansible.builtin.yum:
+        name: vector
+    - name: Deploy Vector configuration
+      become: true
+      ansible.builtin.template:
+        src: vector-config.j2
+        dest: /etc/vector/vector.toml
+      notify: Start Vector service
+  handlers:
+    - name: Start Vector service
+      become: true
+      ansible.builtin.service:
+        name: vector
+        state: restarted
+        enabled: true
