@@ -13,7 +13,7 @@ vector:
     vector-01:
       ansible_connection: ssh
       ansible_ssh_user: gavadmin
-      ansible_host: 158.160.54.121
+      ansible_host: 158.160.119.43
       ansible_private_key_file: ~/.ssh/id_ed25519
       ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
 
@@ -22,6 +22,6 @@ lighthouse:
     lighthouse-01:
       ansible_connection: ssh
       ansible_ssh_user: gavadmin
-      ansible_host: 158.160.54.16
+      ansible_host: 158.160.106.75
       ansible_private_key_file: ~/.ssh/id_ed25519
       ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"

@@ -1,0 +1,26 @@
+---
+data_dir: /var/lib/vector
+
+# Random Syslog-formatted logs
+sources:
+  dummy_logs:
+    type: demo_logs
+    format: syslog
+    interval: 1
+
+
+# Save parsed logs to Clickhouse
+sinks:
+  clickhouse_logs:
+    type: clickhouse
+    inputs:
+      - dummy_logs
+    database: logs
+    endpoint: http://{{ clickhouse_ip }}:8123
+    table: logs_table
+    acknowledgements:
+      enabled: false
+    healthcheck:
+      enabled: false
+    compression: gzip
+    skip_unknown_fields: true
