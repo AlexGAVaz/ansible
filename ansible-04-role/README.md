@@ -37,6 +37,12 @@
 10. Выложите playbook в репозиторий.
 11. В ответе дайте ссылки на оба репозитория с roles и одну ссылку на репозиторий с playbook.
 
+Решение:
+[clickhouse-role](https://github.com/AlexGAVaz/ansible-clickhouse-role).
+[vector-role](https://github.com/AlexGAVaz/ansible-vector-role).
+[lighthouse-role](https://github.com/AlexGAVaz/ansible-lighthouse-role).
+[playbook](https://github.com/AlexGAVaz/ansible/tree/main/ansible-04-role/playbook).
+
 ---
 
 ### Как оформить решение задания
