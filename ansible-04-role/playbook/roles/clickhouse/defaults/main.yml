@@ -1,0 +1,5 @@
+---
+clickhouse_version: "22.3.3.44"
+clickhouse_table: "logs_table"
+clickhouse_db: "logs"
+clickhouse_ip: 51.250.1.252
